@@ -61,6 +61,9 @@ float trailScent(vec2 agentPosition, float agentAngle, float sensorAngleOffset) 
     return sum;
 }
 
+vec2 circleCenter = vec2(width / 2.0, height / 2.0);
+float circleRadius = min(width, height) / 3.0;
+
 void updateSlime(uint id) {
     Slime slime = slimes[id];
     uint random = hash(uint(slimes[id].position.y) * width + uint(slimes[id].position.x) + hash(id.x * 10));
@@ -88,11 +91,23 @@ void updateSlime(uint id) {
     vec2 direction = vec2(cos(slimes[id].angle), sin(slimes[id].angle));
     vec2 newPos = slimes[id].position + direction * moveSpeed;
 
-    if (newPos.x < 0 || newPos.x >= width || newPos.y < 0 || newPos.y >= height) {
-        newPos = clamp(newPos, vec2(0.0), vec2(width, height));
-        slimes[id].angle = scaleToRange01(random) * 2.0 * 3.14159; // PI
-    }
+    // Window Boundary
+    //if (newPos.x < 0 || newPos.x >= width || newPos.y < 0 || newPos.y >= height) {
+    //    newPos = clamp(newPos, vec2(0.0), vec2(width, height));
+    //    slimes[id].angle = scaleToRange01(random) * 2.0 * 3.14159; 
+    //}
 
+    // Circle Boundary
+    if (distance(newPos, circleCenter) > circleRadius) {
+        // Find the nearest point on the circle's edge
+        vec2 toCenter = normalize(circleCenter - newPos);
+        newPos = circleCenter - toCenter * circleRadius;
+
+        // Stick to the circle edge
+        //slimes[id].angle = atan(toCenter.y, toCenter.x) + 3.14159;
+        // Bounce off the circle edge
+        slimes[id].angle = scaleToRange01(random) * 2.0 * 3.14159;
+    }
 
     slimes[id].position = newPos;
 }
