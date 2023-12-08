@@ -13,14 +13,13 @@ uniform int sensorSize;
 uniform float sensorOffsetDistance;
 uniform float turnSpeed;
 
-
-uint hash(uint state) {
-    state ^= 2747636419u;
-    state *= 2654435769u;
-    state ^= state >> 16;
-    state *= 2654435769u;
-    state ^= state >> 16;
-    state *= 2654435769u;
+uint hash(uint state)
+{
+    state = (state ^ 61) ^ (state >> 16);
+    state *= 9;
+    state = state ^ (state >> 4);
+    state *= 0x27d4eb2d;
+    state = state ^ (state >> 15);
     return state;
 }
 
@@ -33,7 +32,6 @@ struct Slime {
 layout(std430, binding = 0) buffer SlimeBuffer {
     Slime slimes[];
 };
-
 
 float scaleToRange01(uint value) {
     return float(value) / 4294967295.0;
@@ -92,26 +90,25 @@ void updateSlime(uint id) {
     vec2 newPos = slimes[id].position + direction * moveSpeed;
 
     // Window Boundary
-    //if (newPos.x < 0 || newPos.x >= width || newPos.y < 0 || newPos.y >= height) {
-    //    newPos = clamp(newPos, vec2(0.0), vec2(width, height));
-    //    slimes[id].angle = scaleToRange01(random) * 2.0 * 3.14159; 
-    //}
+    if (newPos.x < 0 || newPos.x >= width || newPos.y < 0 || newPos.y >= height) {
+        newPos = clamp(newPos, vec2(0.0), vec2(width, height));
+        slimes[id].angle = scaleToRange01(random) * 2.0 * 3.14159; 
+    }
 
     // Circle Boundary
-    if (distance(newPos, circleCenter) > circleRadius) {
+    //if (distance(newPos, circleCenter) > circleRadius) {
         // Find the nearest point on the circle's edge
-        vec2 toCenter = normalize(circleCenter - newPos);
-        newPos = circleCenter - toCenter * circleRadius;
+    //    vec2 toCenter = normalize(circleCenter - newPos);
+    //    newPos = circleCenter - toCenter * circleRadius;
 
         // Stick to the circle edge
         //slimes[id].angle = atan(toCenter.y, toCenter.x) + 3.14159;
         // Bounce off the circle edge
-        slimes[id].angle = scaleToRange01(random) * 2.0 * 3.14159;
-    }
+     //   slimes[id].angle = scaleToRange01(random) * 2.0 * 3.14159;
+    //}
 
     slimes[id].position = newPos;
 }
-
 
 void main() {
     uint id = gl_GlobalInvocationID.x;
@@ -125,5 +122,5 @@ void main() {
     updateSlime(id);
     vec2 newPos = slimes[id].position;
 
-    imageStore(TrailMap, ivec2(newPos), vec4(0.0, 0.6, 1.0, 1.0)); // Trail map is marked with 1.0 to indicate the trail
+    imageStore(TrailMap, ivec2(newPos), vec4(0.0, 1.0, 1.8, 1.5)); // Trail map is marked with 1.0 to indicate the trail
 }
