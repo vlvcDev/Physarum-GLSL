@@ -6,10 +6,10 @@ void ofApp::setup() {
 
 	ofBackground(0, 0, 0);
 
-	windowWidth = 1920;
-	windowHeight = 1200;
+	windowWidth = 1200;
+	windowHeight = 1080;
 
-	numSlimes = 200000; // The number of slime objects
+	numSlimes = 100000; // The number of slime objects
 
 	slimes.resize(numSlimes);
 
@@ -36,24 +36,24 @@ void ofApp::setup() {
 	// Initialize uniform variables
 	moveSpeed = 2.0f; // The speed at which slimes move
 	sensorSize = 1;
-	sensorAngleOffset = 0.098f;
-	sensorOffsetDistance = 25.0f;
-	turnSpeed = 0.001f;
-	
+	sensorAngleOffset = 0.0288f;
+	sensorOffsetDistance = 28.0f;
+	turnSpeed = 0.005f;
+
 	deltaTime = 1.0f / 60;
 
-	diffuseWeight = 10.0f;
-	decayRate = 0.000022f;
+	diffuseWeight = 0.8f;
+	decayRate = 0.00006f;
 
 	//for (int i = 0; i < numSlimes; ++i) {
 	//	// Set initial position and angle
 	//	slimes[i].position = glm::vec2(windowWidth/2, windowHeight/2);
-	//	slimes[i].angle = -ofRandom(2 * 3.1415); // Random angle between 0 and 2*PI
+	//	slimes[i].angle = ofRandom(2 * 3.1415); // Random angle between 0 and 2*PI
 	//}
 
 	// Parameters for the circle
 	glm::vec2 circleCenter = glm::vec2(windowWidth / 2, windowHeight / 2);
-	float circleRadius = 400.0f; // Set the radius of the circle
+	float circleRadius = std::min(windowWidth, windowHeight) / 4.0f; // Set the radius of the circle
 
 	for (int i = 0; i < numSlimes; ++i) {
 		// Generate a random angle and radius
@@ -69,6 +69,28 @@ void ofApp::setup() {
 		// Set the angle of each slime to point towards the center of the circle
 		slimes[i].angle = atan2(circleCenter.y - slimes[i].position.y, circleCenter.x - slimes[i].position.x);
 	}
+
+	// Parameters for the circle
+	//glm::vec2 circleCenter = glm::vec2(windowWidth / 2, windowHeight / 2);
+	//float circleRadius = 300.0f; // Set the radius of the circle
+
+	//for (int i = 0; i < numSlimes; ++i) {
+	//	// Generate a random angle
+	//	float angle = ofRandom(TWO_PI);
+
+	//	// The radius is fixed at circleRadius to spawn on the circumference
+	//	float radius = circleRadius;
+
+	//	// Position each slime on the circumference of the circle
+	//	slimes[i].position = glm::vec2(
+	//		circleCenter.x + radius * cos(angle),
+	//		circleCenter.y + radius * sin(angle)
+	//	);
+
+	//	// Set the angle of each slime to point towards the center of the circle
+	//	slimes[i].angle = atan2(circleCenter.y - slimes[i].position.y, circleCenter.x - slimes[i].position.x);
+	//}
+
 
 	// Upload slimes data to GPU
 	slimesBuffer.allocate(slimes, GL_STATIC_DRAW); // Use GL_DYNAMIC_DRAW if the data will change often
@@ -103,7 +125,7 @@ void ofApp::update() {
 	int numGroupsSlime = (numSlimes + 8 - 1) / 8;
 	slimeShader.dispatchCompute(numGroupsSlime, 1, 1);
 	slimesBuffer.unbindBase(GL_SHADER_STORAGE_BUFFER, 0);
-	
+
 
 	// Additional dispatch for texture diffusion
 	diffuseShader.begin();
@@ -121,61 +143,68 @@ void ofApp::update() {
 }
 
 //--------------------------------------------------------------
-void ofApp::draw(){
+void ofApp::draw() {
 	trailMapTexture.draw(0, 0);
+
+	float fps = ofGetFrameRate();
+
+	ofSetColor(255, 255, 255);
+	ofDrawBitmapString("FPS: " + ofToString(fps), 15, 15);
+
+	ofSetColor(255);
 }
 
 //--------------------------------------------------------------
-void ofApp::keyPressed(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::keyReleased(int key){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseMoved(int x, int y ){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseDragged(int x, int y, int button){
+void ofApp::keyPressed(int key) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button){
+void ofApp::keyReleased(int key) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
+void ofApp::mouseMoved(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
+void ofApp::mouseDragged(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
+void ofApp::mousePressed(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
+void ofApp::mouseReleased(int x, int y, int button) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
+void ofApp::mouseEntered(int x, int y) {
 
 }
 
 //--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo dragInfo){ 
+void ofApp::mouseExited(int x, int y) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::windowResized(int w, int h) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg) {
+
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo) {
 
 }
